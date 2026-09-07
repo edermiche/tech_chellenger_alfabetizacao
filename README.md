@@ -39,6 +39,24 @@ O projeto consome as bases tratadas na **camada Gold e Silver** construídas na 
 * **Dimensões Territoriais:** `data/silver/dim_municipio`, `data/silver/dim_uf`, `data/silver/dominio_regiao_uf` e `data/gold/mapa_calor_territorial` (região, porte do município, IVS territorial).
 * **Dimensões Socioeconômicas:** `data/silver/fato_bolsa_familia_municipio` e `data/gold/meta_uf_bolsa_familia` (renda per capita familiar, escolaridade dos pais, recursos pedagógicos domiciliares).
 
+### Atualização da camada medalhão pelo BigQuery
+
+A ingestão é executada neste próprio projeto, usando as mesmas entidades públicas
+da Fase 2 (`alunos`, resultados e metas de alfabetização, municípios, UFs e
+Bolsa Família). Crie `.env` a partir de `.env.example`, informe o projeto Google
+Cloud que realizará o faturamento e autentique-se com Application Default
+Credentials (`gcloud auth application-default login`).
+
+```bash
+pip install -r requirements.txt
+python main.py --medallion --dry-run --skip-ml
+python main.py --medallion --skip-ml
+```
+
+O primeiro comando apenas estima o volume processado. O segundo grava Bronze,
+Silver e Gold em `data/`, com partições `execution_date=AAAA-MM-DD`; o pipeline
+de ML seleciona automaticamente a versão Silver mais recente.
+
 ---
 
 ## 4. Engenharia de Atributos e Pré-processamento (*Zero Data Leakage*)
