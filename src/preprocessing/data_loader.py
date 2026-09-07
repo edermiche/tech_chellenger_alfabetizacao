@@ -52,9 +52,9 @@ def load_gold_silver_data(sample_size: int = 30000, seed: int = RANDOM_STATE) ->
     np.random.seed(seed)
     
     # 1. Carregar tabela fato de alunos (Silver)
-    fato_aluno_path = _find_table_path(
-        "silver/fato_aluno_alfabetizacao/execution_date=2026-08-31/ano=2024/fato_aluno_alfabetizacao.parquet"
-    ) or _find_table_path("silver/fato_aluno_alfabetizacao/fato_aluno_alfabetizacao.parquet")
+    # A camada medalhão cria execution_date dinamicamente; nunca prenda a
+    # leitura a uma safra específica.
+    fato_aluno_path = _find_table_path("silver/fato_aluno_alfabetizacao.parquet")
     
     if fato_aluno_path and fato_aluno_path.exists():
         print(f"[DATA LOADER] Lendo dados reais de alunos da camada Silver: {fato_aluno_path}")
@@ -91,9 +91,9 @@ def load_gold_silver_data(sample_size: int = 30000, seed: int = RANDOM_STATE) ->
         return generate_synthetic_education_dataset(n_samples=sample_size, seed=seed)
 
     # 2. Carregar Dimensões e Fatos Auxiliares
-    dim_escola_path = _find_table_path("silver/dim_escola/execution_date=2026-08-31/dim_escola.parquet")
-    dim_uf_path = _find_table_path("silver/dim_uf/execution_date=2026-08-31/dim_uf.parquet")
-    fato_bf_path = _find_table_path("silver/fato_bolsa_familia_municipio/execution_date=2026-08-31/ano=2024/fato_bolsa_familia_municipio.parquet")
+    dim_escola_path = _find_table_path("silver/dim_escola.parquet")
+    dim_uf_path = _find_table_path("silver/dim_uf.parquet")
+    fato_bf_path = _find_table_path("silver/fato_bolsa_familia_municipio.parquet")
     
     df_escola = pd.read_parquet(dim_escola_path) if dim_escola_path and dim_escola_path.exists() else None
     df_uf = pd.read_parquet(dim_uf_path) if dim_uf_path and dim_uf_path.exists() else None

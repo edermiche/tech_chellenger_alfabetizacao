@@ -5,6 +5,7 @@ Projeto Integrador da Fase 3 - Pós Tech em Data Science & Machine Learning
 ================================================================================
 """
 
+import argparse
 import sys
 import os
 from pathlib import Path
@@ -28,6 +29,7 @@ from src.modeling.tuning import tune_lightgbm_optuna
 from src.evaluation.metrics import evaluate_all_models_on_test
 from src.evaluation.threshold import optimize_decision_threshold
 from src.visualization.shap_plots import explain_model_with_shap
+from src.medallion import executar_camadas_medalhao
 
 
 def run_full_ml_pipeline():
@@ -121,4 +123,13 @@ def run_full_ml_pipeline():
 
 
 if __name__ == "__main__":
-    run_full_ml_pipeline()
+    parser = argparse.ArgumentParser(description="Pipeline de ML e camada medalhão.")
+    parser.add_argument("--medallion", action="store_true", help="Executa Bronze, Silver e Gold a partir do BigQuery.")
+    parser.add_argument("--dry-run", action="store_true", help="Estima consultas BigQuery sem gravar dados (use com --medallion).")
+    parser.add_argument("--tables", nargs="+", help="Entidades BigQuery a ingerir; padrão: todas.")
+    parser.add_argument("--skip-ml", action="store_true", help="Não executa o treinamento após a camada medalhão.")
+    args = parser.parse_args()
+    if args.medallion:
+        executar_camadas_medalhao(tabelas=args.tables, somente_dry_run=args.dry_run)
+    if not args.skip_ml and not args.dry_run:
+        run_full_ml_pipeline()
